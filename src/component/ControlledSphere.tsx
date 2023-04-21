@@ -1,70 +1,95 @@
-import { useSphere } from "@react-three/cannon";
-import { Sphere } from "@react-three/drei";
-import { forwardRef, useEffect, useRef } from "react";
-import { Mesh } from "three";
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+} from "react";
+import { RigidBody, RapierRigidBody, vec3 } from "@react-three/rapier";
 
-const BALL_SPEED = 3;
+export interface ControlledSphereRef {
+  translation: () => { x: number; y: number; z: number };
+}
 
-export const ControlledSphere = forwardRef<Mesh>((_, fwdRef) => {
-  const [sphereRef, api] = useSphere(
-    () => ({
-      mass: 10,
-      position: [-5.2, 1.5, 1],
-      args: [0.25],
-    }),
-    fwdRef
-  );
+const BALL_SPEED = 5;
+const ControlledSphere = forwardRef((props, ref) => {
+  const rigidBody = useRef<RapierRigidBody>(null);
+  const sphereLocationRef = useRef(null);
 
-  const keys = useRef<Set<string>>(new Set());
+  const keys = useRef(new Set<string>());
+
+  const updateSphereVelocity = () => {
+    const velocityChange = [0, 0, 0];
+    keys.current.forEach((key) => {
+      if (key === "w" || key === "W") velocityChange[2] -= BALL_SPEED;
+      if (key === "s" || key === "S") velocityChange[2] += BALL_SPEED;
+      if (key === "a" || key === "A") velocityChange[0] -= BALL_SPEED;
+      if (key === "d" || key === "D") velocityChange[0] += BALL_SPEED;
+    });
+
+    if (rigidBody.current) {
+      const currentVelocity = vec3(rigidBody.current.linvel());
+      rigidBody.current.setLinvel(
+        {
+          x: velocityChange[0],
+          y: currentVelocity.y,
+          z: velocityChange[2],
+        },
+        true
+      );
+    }
+  };
+
+  const animationLoop = () => {
+    updateSphereVelocity();
+    requestAnimationFrame(animationLoop);
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       keys.current.add(e.key);
-      updateSphereVelocity();
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
       keys.current.delete(e.key);
-      api.angularVelocity.set(0.0, 0.0, 0.0);
-      updateSphereVelocity();
-    };
-
-    const updateSphereVelocity = () => {
-      const velocityChange = [0, 0, 0];
-      keys.current.forEach((key) => {
-        if (key === "w") velocityChange[2] -= BALL_SPEED;
-        if (key === "s") velocityChange[2] += BALL_SPEED;
-        if (key === "a") velocityChange[0] -= BALL_SPEED;
-        if (key === "d") velocityChange[0] += BALL_SPEED;
-      });
-
-      api.velocity.subscribe((currentVelocity) => {
-        api.velocity.set(
-          velocityChange[0],
-          currentVelocity[1],
-          velocityChange[2]
-        );
-      });
     };
 
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
 
+    requestAnimationFrame(animationLoop);
+
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);
     };
-  }, [api]);
+  }, []);
+
+  useImperativeHandle(ref, () => ({
+    translation: () =>
+      rigidBody.current
+        ? vec3(rigidBody.current.translation())
+        : { x: 0, y: 0, z: 0 },
+  }));
 
   return (
-    <group>
-      <Sphere ref={sphereRef} castShadow args={[0.25]}>
+    <RigidBody
+      ref={rigidBody}
+      colliders="ball"
+      position={[-12.11, -43, -2.76]}
+      linearDamping={0.0}
+      angularDamping={0.0}
+      friction={0}
+    >
+      <mesh ref={sphereLocationRef}>
+        <sphereBufferGeometry args={[0.25, 32, 32]} />
         <meshStandardMaterial
-          color={"#F4BC4E"}
-          emissive={"#F4BC4E"}
+          emissive="blue"
           emissiveIntensity={1}
+          color="blue"
         />
-      </Sphere>
-    </group>
+      </mesh>
+    </RigidBody>
   );
 });
+
+export default ControlledSphere;
