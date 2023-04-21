@@ -10,7 +10,7 @@ export interface ControlledSphereRef {
   translation: () => { x: number; y: number; z: number };
 }
 
-const BALL_SPEED = 5;
+const BALL_SPEED = 4;
 const ControlledSphere = forwardRef((props, ref) => {
   const rigidBody = useRef<RapierRigidBody>(null);
   const sphereLocationRef = useRef(null);
@@ -75,7 +75,7 @@ const ControlledSphere = forwardRef((props, ref) => {
     <RigidBody
       ref={rigidBody}
       colliders="ball"
-      position={[-12.11, -43, -2.76]}
+      position={[-5.25, 2, 1]}
       linearDamping={0.0}
       angularDamping={0.0}
       friction={0}
