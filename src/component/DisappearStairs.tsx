@@ -44,7 +44,6 @@ export const DisappearItems = () => {
   );
   useFrame(() => {
     if (spherePositionRef) {
-      console.log(spherePositionRef);
       disappearRefs.current.forEach((disappear, index) => {
         const disappearState = disappeared.current[index];
         const disappearPosition = disappearPositions[index];
@@ -74,8 +73,6 @@ export const DisappearItems = () => {
           // Check if the sphere's y-coordinate has passed the y-coordinate of the disappearPositions
         }
         if (spherePositionRef.current.y < disappearPosition.y - 1) {
-          console.log(spherePositionRef.current.y);
-
           disappear.visible = false;
         }
       });

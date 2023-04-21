@@ -7,28 +7,27 @@ export const AppearItems = () => {
   const { nodes } = useGLTF("./path.glb");
   const appearRefs = useRef([]);
   const spherePositionRef = useSpherePosition();
-
   const appearNames = ["appear001", "appear002"];
 
   const appearPositions = [
     { x: -9.11, y: -44.32, z: -5.76 },
-    { x: -6.39, y: -6.04, z: 0.14 },
+    { x: -6.55, y: -46.87, z: 3.8 },
   ];
 
   const distanceThreshold = 1;
   const ascendingSpeed = 0.02;
   const visibilityDecay = 0.05;
+  const initialYOffset = -1;
 
   const appeared = useRef(
     new Array(appearNames.length).fill(null).map(() => ({
-      visibility: 1,
+      visibility: 0,
       ascending: false,
       castShadow: true,
     }))
   );
   useFrame(() => {
     if (spherePositionRef) {
-      console.log(spherePositionRef.current);
       appearRefs.current.forEach((appear, index) => {
         const appearState = appeared.current[index];
         const appearPosition = appearPositions[index];
@@ -36,12 +35,15 @@ export const AppearItems = () => {
 
         if (!appearState.ascending && distance <= distanceThreshold) {
           appearState.ascending = true;
+          console.log('triggered')
         }
 
         if (appearState.ascending) {
           appearState.visibility += visibilityDecay;
 
-          appear.position.y += ascendingSpeed;
+          if (appear.position.y <= 0) {
+            appear.position.y = appear.position.y + ascendingSpeed;
+          }
 
           appear.material.opacity = Math.min(1, appearState.visibility);
           appear.material.transparent = true;
@@ -66,9 +68,9 @@ export const AppearItems = () => {
             key={appearName}
             ref={(el) => (appearRefs.current[index] = el)}
             geometry={nodes[appearName].geometry}
-            position={[0, -0.01, 0]}
+            position={[0, initialYOffset, 0]}
           >
-            <meshPhongMaterial color="white" transparent />{" "}
+            <meshPhongMaterial color="white" transparent opacity={0} />
           </mesh>
         );
       })}
