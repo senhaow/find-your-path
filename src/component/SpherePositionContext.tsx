@@ -16,3 +16,4 @@ export const SpherePositionProvider = ({ children }) => {
 export const useSpherePosition = () => {
   return useContext(SpherePositionContext);
 };
+ 

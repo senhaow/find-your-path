@@ -14,11 +14,19 @@ import { Lighting } from "./component/Lighting";
 import { useSpherePosition } from "./component/SpherePositionContext";
 import { DisappearItems } from "./component/DisappearStairs";
 import { AppearItems } from "./component/AppearStairs";
+import { SplashScreen } from "./component/SplashScreen";
+import { DynamicFog } from "./component/DynamicFog";
+import FresnelSphere, {
+  GlowingWireframeSphere,
+} from "./component/FresnelSphere";
 
 export function Scene() {
+  const [openingSequenceComplete, setOpeningSequenceComplete] = useState(false);
+
   const cameraRef = useRef<Cam>(null);
   const characterRef = useRef<ControlledSphereRef>(null);
   const fogRef = useRef<Mesh>(null);
+  const openingCameraRef = useRef<Cam>(null);
   const targetRef = useRef<Vector3>(new Vector3());
   const BallLightRef = useRef<Light>(null);
   const clippingPlaneRef = useRef(null);
@@ -31,7 +39,7 @@ export function Scene() {
   useFrame(() => {
     if (!cameraRef.current) return;
     else if (!characterRef.current) {
-      cameraRef.current.lookAt(new Vector3(-5, 4, 0));
+      cameraRef.current.lookAt(new Vector3(-5, 0, 0));
     } else {
       const v = vec3(characterRef.current.translation());
       spherePositionRef.current.copy(v);
@@ -39,7 +47,7 @@ export function Scene() {
       cameraRef.current.lookAt(targetRef.current);
 
       if (characterRef.current && BallLightRef.current) {
-        BallLightRef.current.position.set(v.x, v.y, v.z); // set the position of the light relative to the sphere
+        BallLightRef.current.position.set(v.x, v.y, v.z);
       }
 
       cameraRef.current.position.lerp(
@@ -48,28 +56,46 @@ export function Scene() {
       );
 
       if (clippingPlaneRef.current) {
-        clippingPlaneRef.current.constant = v.y; // Changed this line
+        clippingPlaneRef.current.constant = v.y;
       }
-
-      // if (fogRef.current) {
-      //   fogRef.current.position.setY(v.y - 32.3);
-      // }
     }
   });
 
   return (
     <Suspense fallback={null}>
-      <PerspectiveCamera ref={cameraRef} makeDefault fov={10} />
-      <Lighting BallLightRef={BallLightRef} />
-      <Physics>
-        <Boundary />
-        <ControlledSphere ref={characterRef} />
-      </Physics>
-      <SceneDecorations />
-      <DisappearItems />
-      <AppearItems />
-      <OrbitControls />
+      <PerspectiveCamera
+        ref={cameraRef}
+        makeDefault={openingSequenceComplete}
+        fov={10}
+        position={[-25.25, 30.94, 21]} // Add this
+      />
+      <PerspectiveCamera
+        ref={openingCameraRef}
+        makeDefault={!openingSequenceComplete}
+        fov={10}
+      />
+      <Lighting isOpeningScene={!openingSequenceComplete} />
+      <SplashScreen
+        imageURL="/splash.png"
+        isOpeningScene={!openingSequenceComplete}
+        openingCameraRef={openingCameraRef}
+        setIsOpening={setOpeningSequenceComplete}
+      />
       <PostProcessing />
+      {openingSequenceComplete && (
+        <>
+          {/* <DynamicFog spherePosition={spherePositionRef} lowerBound={5} /> */}
+          <GlowingWireframeSphere />
+
+          <Physics>
+            <Boundary />
+            <ControlledSphere ref={characterRef} />
+          </Physics>
+          <SceneDecorations />
+          <DisappearItems />
+          <AppearItems />
+        </>
+      )}
     </Suspense>
   );
 }

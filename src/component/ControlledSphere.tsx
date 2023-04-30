@@ -5,6 +5,7 @@ import React, {
   useRef,
 } from "react";
 import { RigidBody, RapierRigidBody, vec3 } from "@react-three/rapier";
+import { MeshDistortMaterial, MeshToonMaterial } from "@react-three/drei";
 
 export interface ControlledSphereRef {
   translation: () => { x: number; y: number; z: number };
@@ -75,18 +76,13 @@ const ControlledSphere = forwardRef((props, ref) => {
     <RigidBody
       ref={rigidBody}
       colliders="ball"
-      position={[-5.25, 2, 1]}
+      position={[-5.25, 3, 1]}
       linearDamping={0.0}
       angularDamping={0.0}
       friction={0}
     >
       <mesh ref={sphereLocationRef}>
         <sphereBufferGeometry args={[0.25, 32, 32]} />
-        <meshStandardMaterial
-          emissive="blue"
-          emissiveIntensity={1}
-          color="blue"
-        />
       </mesh>
     </RigidBody>
   );

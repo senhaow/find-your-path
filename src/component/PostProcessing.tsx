@@ -3,6 +3,10 @@ import {
   DepthOfField,
   Bloom,
   Noise,
+  ToneMapping,
+  ChromaticAberration,
+  Vignette,
+  GodRays,
 } from "@react-three/postprocessing";
 
 export const PostProcessing = () => {
@@ -15,10 +19,7 @@ export const PostProcessing = () => {
         height={480}
       />
       <Bloom />
-      {/* <FloatingParticles /> */}
-
-      <Noise opacity={0.05} />
-      {/* <Vignette eskil={false} offset={0.35} darkness={1.2} /> */}
+      <Noise opacity={0.04} />
     </EffectComposer>
   );
 };

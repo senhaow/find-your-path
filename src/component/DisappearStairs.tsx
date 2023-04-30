@@ -72,7 +72,7 @@ export const DisappearItems = () => {
           }
           // Check if the sphere's y-coordinate has passed the y-coordinate of the disappearPositions
         }
-        if (spherePositionRef.current.y < disappearPosition.y - 1) {
+        if (spherePositionRef.current.y < disappearPosition.y - 5) {
           disappear.visible = false;
         }
       });
