@@ -22,6 +22,8 @@ export const Lighting = ({ isOpeningScene }) => {
   const [backgroundColor, setBackgroundColor] = useState("#FFFFFF");
   const [D1LightColor, setD1LightColor] = useState(topD1LightColor);
   const [D2LightColor, setD2LightColor] = useState(topD2LightColor);
+  const [D1LightIntensity, setD1LightIntensity] = useState(0.2);
+  const [D2LightIntensity, setD2LightIntensity] = useState(0.3);
   const { scene } = useThree();
 
   useFrame(() => {
@@ -44,6 +46,7 @@ export const Lighting = ({ isOpeningScene }) => {
       .lerp(bottomD1LightColor, d1LightT);
     setD1LightColor(newD1LightColor);
     scene.children[2].color = newD1LightColor;
+    setD1LightIntensity(0.2 + d1LightT * 0.8);
 
     const d2LightT = Math.min(
       Math.max((spherePositionRef.current.y - -20) / 20, 0),
@@ -54,8 +57,8 @@ export const Lighting = ({ isOpeningScene }) => {
       .lerp(bottomD2LightColor, d2LightT);
     setD2LightColor(newD2LightColor);
     scene.children[3].color = newD2LightColor;
+    setD2LightIntensity(0.3 + d2LightT * 0.7);
   });
-
   return (
     <>
       <color attach="background" args={[backgroundColor]} />
@@ -74,15 +77,15 @@ export const Lighting = ({ isOpeningScene }) => {
 
           <directionalLight
             position={[10, 10, 10]}
-            intensity={0.0}
+            intensity={D1LightIntensity}
             castShadow
-            color={topD1LightColor}
+            color={D1LightColor}
           />
           <directionalLight
             position={[-10, 10, 10]}
-            intensity={0.1}
+            intensity={D1LightIntensity}
             castShadow
-            color={topD2LightColor}
+            color={D2LightColor}
           />
         </>
       )}
