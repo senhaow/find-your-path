@@ -84,7 +84,6 @@ export function Scene() {
       <PostProcessing />
       {openingSequenceComplete && (
         <>
-          {/* <DynamicFog spherePosition={spherePositionRef} lowerBound={5} /> */}
           <GlowingWireframeSphere />
 
           <Physics>

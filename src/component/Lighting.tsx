@@ -30,7 +30,6 @@ export const Lighting = ({ isOpeningScene }) => {
     if (pointLightRef.current) {
       pointLightRef.current.position.copy(spherePositionRef.current);
     }
-    console.log(spherePositionRef);
     const t = Math.min(
       Math.max((spherePositionRef.current.y - -20) / 20, 0),
       1
