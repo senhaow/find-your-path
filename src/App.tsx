@@ -11,7 +11,7 @@ const App: FC = () => {
     <div className="w-screen h-screen overflow-hidden relative">
       {!hasStarted ? (
         <div
-          className="absolute inset-0 flex items-center justify-center"
+          className="absolute inset-0 flex flex-col items-center justify-center "
         >
           <button
             onClick={() => { setHasStarted(true); }}
@@ -19,6 +19,7 @@ const App: FC = () => {
           >
             Start Experience
           </button>
+          <div className="my-10 text-gray-400">Use keyboard <span className="text-gray-500 font-bold">WASD</span> to control the sphere </div>
         </div>
       ) : (
         <div className="w-full h-full">
